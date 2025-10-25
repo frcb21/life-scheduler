@@ -30,10 +30,18 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+
+  "expo": {
+    "web": {
+      "output": "static",
+      "bundler": "metro"
+    }
+  }
+},
     "extra": {
       "eas": {
         "projectId": "ceb57883-a796-4e52-97df-9f619a89c895"
       }
     }
   }
-}
+
