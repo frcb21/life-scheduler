@@ -1,93 +1,50 @@
 import React, { useState } from 'react';
-import { View, Platform } from 'react-native';
+import { View, Button, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {
-  Provider as PaperProvider,
-  TextInput,
-  Button,
-  Card,
-  Title,
-} from 'react-native-paper';
-
-// Only import react-datepicker on web platform
-let DatePicker;
-if (Platform.OS === 'web') {
-  DatePicker = require('react-datepicker').default;
-  require('react-datepicker/dist/react-datepicker.css');
-}
+import { Provider as PaperProvider, Text } from 'react-native-paper';
 
 export default function App() {
-  const [reminderText, setReminderText] = useState('');
   const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
+  const [show, setShow] = useState(false);
 
-  const scheduleReminder = () => {
-    alert(`Reminder: "${reminderText}" set for ${date}`);
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios'); // Keep picker open on iOS, close on others
+    setDate(currentDate);
   };
 
-  const handleDateChange = (event, selectedDate) => {
-    if (Platform.OS === 'web') {
-      setDate(selectedDate);
-    } else {
-      setShowPicker(false);
-      if (selectedDate) {
-        setDate(selectedDate);
-      }
-    }
+  const showDatepicker = () => {
+    setShow(true);
   };
 
   return (
     <PaperProvider>
-      <View style={{ padding: 20 }}>
-        <Card>
-          <Card.Content>
-            <Title>Set a Reminder</Title>
-            <TextInput
-              label="Reminder"
-              value={reminderText}
-              onChangeText={setReminderText}
-              mode="outlined"
-              style={{ marginBottom: 10 }}
-            />
-            
-            {Platform.OS === 'web' ? (
-              <DatePicker
-                selected={date}
-                onChange={handleDateChange}
-                showTimeSelect
-                dateFormat="Pp"
-                style={{ marginBottom: 10 }}
-              />
-            ) : (
-              <>
-                <Button
-                  mode="outlined"
-                  onPress={() => setShowPicker(true)}
-                  style={{ marginBottom: 10 }}
-                >
-                  Pick Date & Time: {date.toLocaleString()}
-                </Button>
-                {showPicker && (
-                  <DateTimePicker
-                    value={date}
-                    mode="datetime"
-                    display="spinner"
-                    onChange={handleDateChange}
-                  />
-                )}
-              </>
-            )}
-
-            <Button
-              mode="contained"
-              onPress={scheduleReminder}
-              style={{ marginTop: 10 }}
-            >
-              Set Reminder
-            </Button>
-          </Card.Content>
-        </Card>
+      <View style={styles.container}>
+        <Text style={styles.dateText}>Selected: {date.toLocaleDateString()}</Text>
+        <Button onPress={showDatepicker} title="Show Date Picker" />
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onChange}
+          />
+        )}
       </View>
     </PaperProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  dateText: {
+    marginBottom: 20,
+    fontSize: 18,
+  },
+});
