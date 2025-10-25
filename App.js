@@ -27,11 +27,17 @@ export default function App() {
         body: reminderText,
       },
       trigger: {
-        type: 'date',
         date: date,
       },
     });
     alert('Reminder scheduled!');
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    setShowPicker(false); // Close the picker
+    if (selectedDate) {
+      setDate(selectedDate); // Update the selected date
+    }
   };
 
   return (
@@ -55,10 +61,7 @@ export default function App() {
                 value={date}
                 mode="datetime"
                 display="default"
-                onChange={(event, selectedDate) => {
-                  setShowPicker(Platform.OS === 'ios');
-                  if (selectedDate) setDate(selectedDate);
-                }}
+                onChange={handleDateChange}
               />
             )}
             <Button
