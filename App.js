@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Platform } from 'react-native';
+import { View, Platform, TextInput as RNTextInput } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   Provider as PaperProvider,
@@ -25,6 +25,23 @@ export default function App() {
     }
   };
 
+  const handleWebDateChange = (event) => {
+    const newDate = new Date(event.target.value);
+    if (!isNaN(newDate.getTime())) {
+      setDate(newDate);
+    }
+  };
+
+  // Format date for datetime-local input (YYYY-MM-DDTHH:mm)
+  const formatDateForInput = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   return (
     <PaperProvider>
       <View style={{ padding: 20 }}>
@@ -39,20 +56,39 @@ export default function App() {
               style={{ marginBottom: 10 }}
             />
             
-            <Button
-              mode="outlined"
-              onPress={() => setShowPicker(true)}
-              style={{ marginBottom: 10 }}
-            >
-              Pick Date & Time: {date.toLocaleString()}
-            </Button>
-            {showPicker && (
-              <DateTimePicker
-                value={date}
-                mode="datetime"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={handleDateChange}
-              />
+            {Platform.OS === 'web' ? (
+              <View style={{ marginBottom: 10 }}>
+                <RNTextInput
+                  type="datetime-local"
+                  value={formatDateForInput(date)}
+                  onChange={handleWebDateChange}
+                  style={{
+                    padding: 12,
+                    borderWidth: 1,
+                    borderColor: '#ccc',
+                    borderRadius: 4,
+                    fontSize: 16,
+                  }}
+                />
+              </View>
+            ) : (
+              <>
+                <Button
+                  mode="outlined"
+                  onPress={() => setShowPicker(true)}
+                  style={{ marginBottom: 10 }}
+                >
+                  Pick Date & Time: {date.toLocaleString()}
+                </Button>
+                {showPicker && (
+                  <DateTimePicker
+                    value={date}
+                    mode="datetime"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleDateChange}
+                  />
+                )}
+              </>
             )}
 
             <Button
