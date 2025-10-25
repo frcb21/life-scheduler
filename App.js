@@ -9,13 +9,6 @@ import {
   Title,
 } from 'react-native-paper';
 
-// Only import react-datepicker on web platform
-let DatePicker;
-if (Platform.OS === 'web') {
-  DatePicker = require('react-datepicker').default;
-  require('react-datepicker/dist/react-datepicker.css');
-}
-
 export default function App() {
   const [reminderText, setReminderText] = useState('');
   const [date, setDate] = useState(new Date());
@@ -26,13 +19,9 @@ export default function App() {
   };
 
   const handleDateChange = (event, selectedDate) => {
-    if (Platform.OS === 'web') {
+    setShowPicker(Platform.OS !== 'web');
+    if (selectedDate) {
       setDate(selectedDate);
-    } else {
-      setShowPicker(false);
-      if (selectedDate) {
-        setDate(selectedDate);
-      }
     }
   };
 
@@ -50,32 +39,20 @@ export default function App() {
               style={{ marginBottom: 10 }}
             />
             
-            {Platform.OS === 'web' ? (
-              <DatePicker
-                selected={date}
+            <Button
+              mode="outlined"
+              onPress={() => setShowPicker(true)}
+              style={{ marginBottom: 10 }}
+            >
+              Pick Date & Time: {date.toLocaleString()}
+            </Button>
+            {showPicker && (
+              <DateTimePicker
+                value={date}
+                mode="datetime"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                 onChange={handleDateChange}
-                showTimeSelect
-                dateFormat="Pp"
-                style={{ marginBottom: 10 }}
               />
-            ) : (
-              <>
-                <Button
-                  mode="outlined"
-                  onPress={() => setShowPicker(true)}
-                  style={{ marginBottom: 10 }}
-                >
-                  Pick Date & Time: {date.toLocaleString()}
-                </Button>
-                {showPicker && (
-                  <DateTimePicker
-                    value={date}
-                    mode="datetime"
-                    display="spinner"
-                    onChange={handleDateChange}
-                  />
-                )}
-              </>
             )}
 
             <Button
