@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Platform } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import * as Notifications from 'expo-notifications';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   Provider as PaperProvider,
-  Text,
   TextInput,
   Button,
   Card,
@@ -14,30 +13,9 @@ import {
 export default function App() {
   const [reminderText, setReminderText] = useState('');
   const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
 
-  useEffect(() => {
-    Notifications.requestPermissionsAsync();
-  }, []);
-
-  const scheduleReminder = async () => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Reminder',
-        body: reminderText,
-      },
-      trigger: {
-        date: date,
-      },
-    });
-    alert('Reminder scheduled!');
-  };
-
-  const handleDateChange = (event, selectedDate) => {
-    setShowPicker(false); // Close the picker
-    if (selectedDate) {
-      setDate(selectedDate); // Update the selected date
-    }
+  const scheduleReminder = () => {
+    alert(`Reminder: "${reminderText}" set for ${date}`);
   };
 
   return (
@@ -53,17 +31,13 @@ export default function App() {
               mode="outlined"
               style={{ marginBottom: 10 }}
             />
-            <Button mode="contained" onPress={() => setShowPicker(true)}>
-              Pick Date & Time
-            </Button>
-            {showPicker && (
-              <DateTimePicker
-                value={date}
-                mode="datetime"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
+            <DatePicker
+              selected={date}
+              onChange={(selectedDate) => setDate(selectedDate)}
+              showTimeSelect
+              dateFormat="Pp"
+              style={{ marginBottom: 10 }}
+            />
             <Button
               mode="contained"
               onPress={scheduleReminder}
